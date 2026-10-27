@@ -1,0 +1,21 @@
+# Virtuelle Umgebung (Packages)
+.venv/
+venv/
+env/
+
+# Python Cache & kompilierte Dateien
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyCharm & IDE-Einstellungen
+.idea/
+.vscode/
+
+# Betriebssystem-Dateien
+.DS_Store
+Thumbs.db
+
+# Umgebungs- & Geheimdateien (API-Keys, Secrets)
+.env
+*.env
