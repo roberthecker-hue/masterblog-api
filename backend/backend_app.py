@@ -12,18 +12,20 @@ POSTS = [
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
+    """gets all posts"""
     return jsonify(POSTS)
 
 
 @app.route("/api/posts", methods=["POST"])
 def add_post():
+    """adds a new post"""
     data = request.get_json()
 
-    # 1. Validierung
+    # 1. Validierung, ob Felder gefüllt
     if not data or not data.get("title") or not data.get("content"):
         return jsonify({"error": "Title and content are required"}), 400
 
-    # 2. Neue ID berechnen
+    # 2. Neue ID berechnen (höchste bislang vergebene ID +1)
     all_ids = []
     for post in POSTS:
         all_ids.append(post["id"])
@@ -33,7 +35,7 @@ def add_post():
         highest_id = 0
     new_id = highest_id + 1
 
-    # 3. Neun Post erstellen und hinzufügen
+    # 3. Neuen Post erstellen, inhalte vom Frontend hinzufügen
     new_post = {
         "id": new_id,
         "title": data["title"],
@@ -41,8 +43,30 @@ def add_post():
     }
     POSTS.append(new_post)
 
-    # 4. Antwort mit Statuscode 201
+    # 4. Antwort mit Statuscode 201 ("Created")
     return jsonify(new_post), 201
+
+
+@app.route('/api/posts/<int:id>', methods=['DELETE'])
+def delete_post(id):
+    """deletes a post"""
+    post_to_delete = None
+
+    # 1. Post suchen
+    for post in POSTS:
+        if post["id"] == id:
+            post_to_delete = post
+            break
+
+    # 2. Wenn nicht gefunden -> Fehlermeldung 404
+    if post_to_delete is None:
+        return jsonify({"error": f"Post with id {id} not found."}), 404
+
+    # 3. Post aus Liste entfernen
+    POSTS.remove(post_to_delete)
+
+    # 4. Erfolgsmeldung mit 200 OK
+    return jsonify({"message": f"Post with id {id} has been deleted successfully."}), 200
 
 
 if __name__ == '__main__':
