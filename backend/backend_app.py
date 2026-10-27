@@ -69,5 +69,29 @@ def delete_post(id):
     return jsonify({"message": f"Post with id {id} has been deleted successfully."}), 200
 
 
+@app.route('/api/posts/<int:id>', methods=['PUT'])
+def update_post(id):
+  """updates an existing post"""
+  data = request.get_json() or {}
+
+  # 1. Post in der Liste POSTS suchen
+  post = None
+  for p in POSTS:
+    if p["id"] == id:
+      post = p
+      break
+
+  # 2. Falls nicht gefunden -> 404
+  if post is None:
+    return jsonify({"error": f"Post with id {id} not found."}), 404
+
+  # 3. Felder optional aktualisieren (Fallback auf alten Wert, falls keine Eingabe gemacht wurde)
+  post["title"] = data.get("title", post["title"])
+  post["content"] = data.get("content", post["content"])
+
+  # 4. Aktualisierten Post mit Statuscode 200 zurückgeben
+  return jsonify(post), 200
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5002, debug=True)
